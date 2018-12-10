@@ -1,0 +1,168 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>House Prediction</title>
+  <link rel="stylesheet" href="styles/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <link href="styles/style.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script> 
+  <!-- two way slider script -->
+</head>
+
+<body>
+  <div class="banner">
+    <h1 class="banner-head">
+      Simple House Pricing<br>
+      King County, Washington USA
+    </h1>
+  </div>
+
+
+  <section class="section">
+    <div class="container has-text-centered" >
+      <h2 class="title" font size="6">Machine learning technique and regression is one of the most efficient way to predict the house vale. This platform is design for home salers who need estimate house value base on the house information.
+        <a href="https://www.kaggle.com/harlfoxem/housesalesprediction">Dataset<br></a> 
+      </h2>
+    </div>
+  </section>
+
+
+   <section class="section">
+    
+  </section>
+
+
+  <div class="predictionTable">
+    <!-- <div class="pricing-tables pure-g"> -->
+    <div style="display: flex">
+    	 <div class="pure-u-1 pure-u-md-1-3">
+        <div class="pricing-table pricing-table-free">
+          <div class="pricing-table-header" >
+            <span class="pricing-table-price">
+              How Much Is The Home Worth ?<span></span>
+            </span>
+          </div>
+
+
+
+          <!-- LIST -->
+
+          <ul class="pricing-table-list">
+            <li> ZIPCODE
+              <select id="chooseZip" style="width: 20%;" >
+                <script language="javascript" type="text/javascript">
+                  list= [98001, 98002, 98003, 98004, 98005, 98006, 98007, 98008, 98010,
+                  98011, 98014, 98019, 98022, 98023, 98024, 98027, 98028, 98029,
+                  98030, 98031, 98032, 98033, 98034, 98038, 98039, 98040, 98042,
+                  98045, 98052, 98053, 98055, 98056, 98058, 98059, 98065, 98070,
+                  98072, 98074, 98075, 98077, 98092, 98102, 98103, 98105, 98106,
+                  98107, 98108, 98109, 98112, 98115, 98116, 98117, 98118, 98119,
+                  98122, 98125, 98126, 98133, 98136, 98144, 98146, 98148, 98155,
+                  98166, 98168, 98177, 98178, 98188, 98198, 98199]
+
+                  for (var i=0 ; i<70;i++){
+                    document.write("<option>"+list[i]+"</option>");
+                  }
+
+                </script>
+              </select></li>
+
+              <li> YEAR BUILT
+                <select id="chooseYear" style="width: 20%;" >
+                 <script language="javascript" type="text/javascript"> 
+                  for(var d=1900;d<=2015;d++){
+                    document.write("<option>"+d+"</option>");
+                  }
+                </script>
+              </select>
+            </li>
+            <li>NUMBER OF BEDROOM
+              <select id="chooseBed" style="width: 20%;" >
+                <option>0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+              </select>
+
+
+            </li>
+            <li> NUMBER OF BATHROOM
+              <select id="chooseBath" style="width: 20%;" >
+                <option>0</option>
+                <option>1</option>
+                <option>1.5</option>
+                <option>2</option>
+                <option>2.5</option>
+                <option>3</option>
+                <option>3.5</option>
+                <option>4</option>
+                <option>4.5</option>
+                <option>5</option>
+              </select>
+            </li>
+            <li>THE ESTIMATE SQUARE FEET :&nbsp <span id="demo" style=font-weight:bold;></span><br>
+             <input type="range" min="200" max="15000" value="0" class="slider" id="myRange">
+           </li>
+
+
+           <button type="button" onclick="predictValue()" style="margin-top: 3em;" class="predictbutton" ><span>Predict</span></button>
+         </ul>
+       </div>
+       
+     </div>
+     <div>
+     <table id="myTable" style="margin-left: 40%;">
+	 	 <tr">
+	  	   <td>living sqft</td>
+	 	   <td>zipcode</td>
+	 	   <td>year</td>
+	       <td>bedroom</td>
+	       <td>bathroom</td>
+	       <td>basement sqft</td>
+	       <td>condition number</td>
+	       <td>floors</td>
+	       <td>price</td>
+	 	 </tr>
+	</table>
+	<button type="button" onclick="show_similar()" class="similarbutton" style="margin-left: 60%;margin-top: 2%" ><span>Locate Similar House</span></button>
+	</div>
+    </div>
+    
+     <!-- Show the Predicted house value -->
+    <h2 class:"prediction_result"> Prediction of House Value : <span id="predictvalue"></span></h2>
+
+    
+
+     <!-- General Filtering -->
+    <section class = "section">
+    	<div style="display: block;">
+            <h2 class:"brushing_plot" style="margin-left: 20%;"> Number of Houses vs Price Range <span id="title"></span></h2>
+    		<div id="svgpathSVGdata"></div>
+    		<h2 class:"brushing_plot" style="margin-left: 20%;"> Number of Houses vs living space <span id="title"></span></h2>
+        	<div id="svgpathSVGdata2"></div>
+    	</div>
+   		
+
+
+		<div id="map" style="margin-left: 2%;"></div>
+    </section>>
+
+    <button type="button" onclick="show_points()" style="margin-top: 1%;margin-left: 3%;margin-right: 4%;" class="filterbutton" ><span>Show House of Selected Range</span></button>
+    <button type="button" onclick="more()" style="margin-top: 1%;" class="filterbutton" ><span>Show More Houses</span></button> 
+    <button type="button" onclick="clear_points()" style="margin-top: 1%;margin-left: 30%;" class="filterbutton" ><span>Clear Map</span></button> 
+
+    
+</body>
+</html>
+
+<script src="scripts/main.js"></script>
